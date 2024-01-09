@@ -33,9 +33,11 @@ async function handleClickSearchId() {
   try {
     const input = document.getElementById("taskId").value;
     const task = await getTaskById(input);
-    if (task) {
+    if (task.id) {
       console.log('Get response...: ', JSON.stringify(task));
       renderTaskDetails(task);
+    } else {
+      renderErrorGetId(task);
     }
   } catch (error) {
     console.error("Error handling search:", error);
@@ -45,15 +47,27 @@ async function handleClickSearchId() {
 function renderTaskDetails(task) {
   const taskDetailsList = document.getElementById("taskDetailsList");
   taskDetailsList.innerHTML = `
-    <li><strong>Name:</strong> ${task.name || "N/A"}</li>
-    <li><strong>Stage:</strong> ${task.stage || "N/A"}</li>
-    <li><strong>Start Date:</strong> ${task.start_date || "N/A"}</li>
-    <li><strong>End Date:</strong> ${task.end_date || "N/A"}</li>
-    <li><strong>Historic:</strong> ${task.historic || "N/A"}</li>
+    <div class="taskData">
+      <strong>Name: </strong> ${task.name || "null"}
+      <br><strong>Stage: </strong> ${task.stage || "null"}
+      <br><strong>Start Date: </strong> ${task.start_date || "null"}
+      <br><strong>End Date: </strong> ${task.end_date || "null"}
+      <br><strong>Historic: </strong> ${task.historic || "null"}
+    </div>
   `;
 
   const taskDetailsDiv = document.getElementById("taskDetails");
   taskDetailsDiv.classList.remove("toggleScreen");
+}
+
+function renderErrorGetId(task) {
+  const taskDetailsList = document.getElementById("taskDetailsList");
+  taskDetailsList.innerHTML = `
+    <div class="taskData">
+      <strong>Error:</strong> Id not found.
+      <br><strong>Details:</strong> ${task.details || "null"}
+    </div>
+  `;
 }
 
 function handleClickSend() {
