@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<title>Task</title>
+	<link rel="stylesheet" href="./style.css">
+</head>
+
+<body>
+	<div class="create">
+		<div class="main">
+			<input type="checkbox" id="chk" aria-hidden="true">
+
+			<div class="signup">
+				<form id="taskForm">
+					<label for="chk" aria-hidden="true">Create Task</label>
+					<input type="text" name="txt" id="tname" placeholder="Task name" required="">
+					<input type="text" name="txt" id="stage" placeholder="Stage" required="">
+					<input type="text" name="txt" id="historic" placeholder="Historic" required="">
+					<h3 for="endDate">End date</h3>
+					<input type="date" id="endDate" name="end-date" required>
+					<button type="button" onclick="handleClickSend()">Create</button>
+					<button type="button" onclick="handleScreenSearch()">Search task</button>
+				</form>
+			</div>
+		</div>
+	</div>
+	<div class="search toggleScreen">
+		<div class="main">
+			<input type="checkbox" id="chk" aria-hidden="true">
+
+			<div class="signup">
+				<form id="taskForm">
+					<label for="chk" aria-hidden="true">Search Task By Id</label>
+					<input type="text" name="txt" id="taskId" placeholder="Task Id" required="">
+					<button type="button" onclick="handleClickSearchId()">Search task</button>
+					<button type="button" onclick="handleClickView()">View all task</button>
+					<button type="button" onclick="handleScreenCreate()">Create task</button>
+				</form>
+				<div id="taskDetails">
+					<h3 for="endDate">Task Details</h3>
+					<ul class="taskData" id="taskDetailsList">
+						<!-- Detalhes da tarefa serão exibidos aqui -->
+					</ul>
+				</div>
+			</div>
+		</div>
+	</div>
+	<script src="script.js"></script>
+</body>
+
+</html>
