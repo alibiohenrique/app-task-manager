@@ -1,4 +1,5 @@
 function sendDataToBackend(data) {
+  console.log('Request....: ', JSON.stringify(data));
   fetch("http://localhost:8080/api/tasks", {
     method: "POST",
     headers: {
@@ -8,12 +9,11 @@ function sendDataToBackend(data) {
   })
     .then((response) => response.json())
     .then((json) => {
-      console.log(JSON.stringify(json));
+      console.log('Response....: ', JSON.stringify(json));
     });
 }
 
 function getTaskById(id) {
-  console.log("chamou a get");
 
   return fetch("http://localhost:8080/api/tasks/" + id, {
     method: "GET",
@@ -29,12 +29,12 @@ function getTaskById(id) {
 }
 
 async function handleClickSearchId() {
-  console.log("chamou a func");
+  
   try {
     const input = document.getElementById("taskId").value;
     const task = await getTaskById(input);
     if (task) {
-      console.log("tem task", task);
+      console.log('Get response...: ', JSON.stringify(task));
       renderTaskDetails(task);
     }
   } catch (error) {
