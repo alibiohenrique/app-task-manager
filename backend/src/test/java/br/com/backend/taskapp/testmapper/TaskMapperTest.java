@@ -116,7 +116,7 @@ public class TaskMapperTest {
   }
   
   @Test
-  public void testTaskListToTaskDTO () {
+  public void testTaskListToTaskDtoList () {
     
     List<Task> taskList = new ArrayList<>();
     
@@ -140,21 +140,10 @@ public class TaskMapperTest {
     taskList.add(taskMockT2);
     List<TaskDTO> taskDTOList = taskMapper.toTaskDTOList(taskList);
     
-    TaskDTO taskDTO = new TaskDTO();
-    taskDTO.setId(1L);
-    taskDTO.setName("Alibio");
-    taskDTO.setStartDate("01/01/2024");
-    taskDTO.setEndDate("05/01/2024");
-    taskDTO.setHistoric("Testing");
-    taskDTO.setStage("Done");
-    
-    taskDTOList.add(taskDTO);
-    
-    assertNotEquals(taskDTOList.size(), taskList.size());
+    assertEquals(2, taskList.size());
     
     for (int i = 0; i < taskList.size(); i++) {
       
-      assertEquals(taskDTOList.get(i).getId(), taskList.get(i).getId());
       assertEquals(taskDTOList.get(i).getId(), taskList.get(i).getId());
       assertEquals(taskDTOList.get(i).getName(), taskList.get(i).getTitle());
       assertEquals(taskDTOList.get(i).getStartDate(), taskList.get(i).getCreateDate());
@@ -167,62 +156,43 @@ public class TaskMapperTest {
   }
   
   @Test
-  public void testTaskListToDtoNotEquals () {
+  public void testTaskDtoListToTaskList () {
     
-    List<Task> taskList = new ArrayList<>();
+    List<TaskDTO> taskDtoList = new ArrayList<>();
     
-    Task taskMockT1 = new Task();
+    TaskDTO taskMockT1 = new TaskDTO();
     taskMockT1.setId(1L);
-    taskMockT1.setTitle("Test");
-    taskMockT1.setStatus("In progress");
-    taskMockT1.setCloseDate("31/01/2000");
-    taskMockT1.setCreateDate("31/01/2023");
+    taskMockT1.setName("Test");
+    taskMockT1.setStage("In progress");
+    taskMockT1.setStartDate("31/01/2000");
+    taskMockT1.setEndDate("31/01/2023");
     taskMockT1.setHistoric("Clean bathroom");
     
-    Task taskMockT2 = new Task();
+    TaskDTO taskMockT2 = new TaskDTO();
     taskMockT2.setId(2L);
-    taskMockT2.setTitle("Test Double");
-    taskMockT2.setStatus("Done");
-    taskMockT2.setCloseDate("31/05/2014");
-    taskMockT2.setCreateDate("01/03/2018");
+    taskMockT2.setName("Test Double");
+    taskMockT2.setStage("Done");
+    taskMockT2.setStartDate("31/05/2014");
+    taskMockT2.setEndDate("01/03/2018");
     taskMockT2.setHistoric("Clean kitchen");
     
-    taskList.add(taskMockT1);
-    taskList.add(taskMockT2);
+    taskDtoList.add(taskMockT1);
+    taskDtoList.add(taskMockT2);
+    List<Task> taskList = taskMapper.toTaskList(taskDtoList);
     
-    List<TaskDTO> taskDTOList = taskMapper.toTaskDTOList(taskList);
+    assertEquals(2, taskList.size());
     
-    List<TaskDTO> mockedDtoList = new ArrayList<>();
-    
-    TaskDTO taskDtoMockedT1 = new TaskDTO();
-    taskDtoMockedT1.setId(3L);
-    taskDtoMockedT1.setName("The mocked Title");
-    taskDtoMockedT1.setStage("Not a test");
-    taskDtoMockedT1.setStartDate("31/01/2000");
-    taskDtoMockedT1.setEndDate("31/01/2023");
-    taskDtoMockedT1.setHistoric("The historic test");
-    
-    TaskDTO taskDtoMockedT2 = new TaskDTO();
-    taskDtoMockedT2.setId(4L);
-    taskDtoMockedT2.setName("The 2° mocked Title");
-    taskDtoMockedT2.setStage("This is a test");
-    taskDtoMockedT2.setStartDate("00/00/0000");
-    taskDtoMockedT2.setEndDate("00/00/0000");
-    taskDtoMockedT2.setHistoric("The historic test");
-    
-    mockedDtoList.add(taskDtoMockedT1);
-    mockedDtoList.add(taskDtoMockedT2);
-    
-    for (int i = 0; i < taskDTOList.size(); i++) {
+    for (int i = 0; i < taskList.size(); i++) {
       
-      assertNotEquals((taskDTOList.get(i).getId()), mockedDtoList.get(i).getId());
-      assertNotEquals(taskDTOList.get(i).getName(), mockedDtoList.get(i).getName());
-      assertNotEquals(taskDTOList.get(i).getStartDate(), mockedDtoList.get(i).getStartDate());
-      assertNotEquals(taskDTOList.get(i).getEndDate(), mockedDtoList.get(i).getEndDate());
-      assertNotEquals(taskDTOList.get(i).getHistoric(), mockedDtoList.get(i).getHistoric());
-      assertNotEquals(taskDTOList.get(i).getStage(), mockedDtoList.get(i).getStage());
+      assertEquals(taskList.get(i).getId(), taskDtoList.get(i).getId());
+      assertEquals(taskList.get(i).getTitle(), taskDtoList.get(i).getName());
+      assertEquals(taskList.get(i).getCreateDate(), taskDtoList.get(i).getStartDate());
+      assertEquals(taskList.get(i).getCloseDate(), taskDtoList.get(i).getEndDate());
+      assertEquals(taskList.get(i).getHistoric(), taskDtoList.get(i).getHistoric());
+      assertEquals(taskList.get(i).getStatus(), taskDtoList.get(i).getStage());
       
     }
+    
   }
   
 }
