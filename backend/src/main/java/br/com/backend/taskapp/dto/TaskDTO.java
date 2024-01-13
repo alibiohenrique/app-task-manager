@@ -12,6 +12,7 @@ import java.io.Serializable;
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode
+@ToString
 @JsonPropertyOrder({"id", "name", "stage", "start_date", "end_date"})
 public class TaskDTO extends RepresentationModel<TaskDTO> implements Serializable {
 
