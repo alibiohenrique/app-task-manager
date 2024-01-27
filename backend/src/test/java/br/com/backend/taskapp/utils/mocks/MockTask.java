@@ -1,4 +1,4 @@
-package br.com.backend.taskapp.mapper.mocks;
+package br.com.backend.taskapp.utils.mocks;
 
 import br.com.backend.taskapp.dto.TaskDTO;
 import br.com.backend.taskapp.model.Task;

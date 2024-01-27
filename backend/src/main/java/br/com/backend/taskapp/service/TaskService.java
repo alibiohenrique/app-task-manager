@@ -2,18 +2,20 @@ package br.com.backend.taskapp.service;
 
 import br.com.backend.taskapp.controller.TaskController;
 import br.com.backend.taskapp.dto.TaskDTO;
-import br.com.backend.taskapp.exceptions.ResourceNotFoundException;
-import br.com.backend.taskapp.mapper.TaskMapper;
 import br.com.backend.taskapp.model.Task;
 import br.com.backend.taskapp.repository.TaskRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static br.com.backend.taskapp.mapper.Mapper.parseObjList;
 import static br.com.backend.taskapp.mapper.Mapper.parseObject;
+import static java.util.stream.Collectors.*;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
@@ -23,35 +25,38 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 public class TaskService {
 
     private final TaskRepository repository;
-    private final TaskMapper taskMapper;
 
-
-    public TaskDTO findById(Long id) {
+    public ResponseEntity<?> findById(Long id) {
         log.info("[GET BY ID] Find task by id...");
-        var entity = repository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("[TASK-APP] No task for this id"));
-        var dto = parseObject(entity, TaskDTO.class);
 
+        Optional<Task> entity = repository.findById(id);
+        if (entity.isEmpty()) return ResponseEntity.notFound().build();
+
+        var dto = parseObject(entity.get(), TaskDTO.class);
         dto.add(linkTo(methodOn(TaskController.class).findById(id)).withSelfRel());
-        return dto;
+
+        return ResponseEntity.of(Optional.of(dto));
     }
 
-    public List<TaskDTO> getAllTask() {
+    public List<ResponseEntity<?>> getAllTask() {
         log.info("[GET ALL] Finding all tasks...");
-        var tasks = parseObjList(repository.findAll(), TaskDTO.class);
-
-        tasks.forEach(t -> t.add(linkTo(methodOn(TaskController.class).findById(t.getId())).withSelfRel()));
-        return tasks;
+        List<TaskDTO> taskDTOList = parseObjList(repository.findAll(), TaskDTO.class);
+        return taskDTOList.stream()
+                .map(t -> {
+                    t.add(linkTo(methodOn(TaskController.class).findById(t.getId())).withSelfRel());
+                    return ResponseEntity.ok(t);
+                })
+                .collect(toList());
     }
 
-    public TaskDTO create(TaskDTO taskDTO) {
-        log.info("[POST] Creating a task!");
+    public ResponseEntity<?> create(TaskDTO taskDTO) {
         log.info("[REQUEST] " + taskDTO.toString());
         var entity = parseObject(taskDTO, Task.class);
         var savedEntity = repository.save(entity);
-        var dto = taskMapper.toTaskDTO(savedEntity);
+        var dto = parseObject(savedEntity, TaskDTO.class);
         log.info("[RESPONSE] " + dto.toString());
         dto.add(linkTo(methodOn(TaskController.class).findById(dto.getId())).withSelfRel());
-        return dto;
+
+        return ResponseEntity.ok(dto);
     }
 }
