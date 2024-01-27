@@ -1,11 +1,10 @@
 package br.com.backend.taskapp.service;
 
 import br.com.backend.taskapp.dto.TaskDTO;
-import br.com.backend.taskapp.exceptions.ResourceNotFoundException;
-import br.com.backend.taskapp.mapper.TaskMapper;
-import br.com.backend.taskapp.mapper.mocks.MockTask;
+import br.com.backend.taskapp.mapper.Mapper;
 import br.com.backend.taskapp.model.Task;
 import br.com.backend.taskapp.repository.TaskRepository;
+import br.com.backend.taskapp.utils.mocks.MockTask;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -13,13 +12,14 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 
 import java.util.List;
 import java.util.Optional;
 
+import static org.junit.Assert.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 @Slf4j
@@ -29,41 +29,43 @@ class TaskServiceTest {
     @Mock
     private TaskRepository repository;
     @Mock
-    private TaskMapper taskMapper;
+    private Mapper mapper;
     @InjectMocks
     private TaskService taskService;
     private MockTask mockObj;
 
     @BeforeEach
     public void setup() {
+
         mockObj = new MockTask();
+        repository.deleteAll();
+
     }
 
     @Test
     void testFindById() {
-        Long taskId = 0L;
-        TaskDTO taskDTO = mockObj.mockTaskDTO();
-        taskDTO.setId(taskId);
+        Task mockTask = mockObj.mockTask();
+        when(repository.findById(0L)).thenReturn(Optional.of(mockTask));
 
-        when(repository.findById(taskId)).thenReturn(Optional.of(mockObj.mockTask()));
-        lenient().when(taskMapper.toTaskDTO(any())).thenReturn(taskDTO);
+        ResponseEntity<TaskDTO> result = (ResponseEntity<TaskDTO>) taskService.findById(0L);
+        log.info("result: {}", result);
 
-        TaskDTO result = taskService.findById(taskId);
+        assertNotNull(result.getBody());
+        assertEquals(0L, result.getBody().getId());
 
-        assertEquals(taskId, result.getId());
-
-        verify(repository, times(1)).findById(taskId);
+        verify(repository, times(1)).findById(0L);
     }
 
     @Test
     void testFindByIdNotFound() {
-        Long taskId = 1L;
+        when(repository.findById(1l)).thenReturn(Optional.empty());
 
-        when(repository.findById(taskId)).thenReturn(Optional.empty());
+        ResponseEntity<?> result = taskService.findById(1L);
+        log.info("result: {}", result);
 
-        assertThrows(ResourceNotFoundException.class, () -> taskService.findById(taskId));
+        assertEquals(ResponseEntity.notFound().build(), result);
+        verify(repository, times(1)).findById(1L);
 
-        verify(repository, times(1)).findById(taskId);
     }
 
     @Test
@@ -72,9 +74,8 @@ class TaskServiceTest {
         List<TaskDTO> taskDTOs = mockObj.mockTaskDTOList(2);
 
         when(repository.findAll()).thenReturn(taskEntities);
-        lenient().when(taskMapper.toTaskDTOList(any())).thenReturn(taskDTOs);
 
-        List<TaskDTO> result = taskService.getAllTask();
+        List<ResponseEntity<?>> result = taskService.getAllTask();
 
         assertEquals(taskDTOs.size(), result.size());
 
@@ -83,17 +84,19 @@ class TaskServiceTest {
 
     @Test
     void testCreate() {
-        TaskDTO taskDTO = mockObj.mockTaskDTO();
         Task taskEntity = mockObj.mockTask();
+        TaskDTO taskDTO = mockObj.mockTaskDTO();
 
-        when(taskMapper.toTaskDTO(any())).thenReturn(taskDTO);
         when(repository.save(any(Task.class))).thenReturn(taskEntity);
 
-        TaskDTO result = taskService.create(taskDTO);
+        ResponseEntity<TaskDTO> responseEntity = (ResponseEntity<TaskDTO>) taskService.create(taskDTO);
 
-        assertEquals(taskDTO.getId(), result.getId());
+        assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
+        assertEquals(taskDTO.getId(), responseEntity.getBody().getId());
 
-        verify(taskMapper, times(1)).toTaskDTO(taskEntity);
+        assertNotNull(responseEntity.getBody());
+        assertNotNull(taskDTO);
+
         verify(repository, times(1)).save(any(Task.class));
     }
 }
