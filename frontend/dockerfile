@@ -1,0 +1,11 @@
+FROM node:lts-alpine@sha256:8e6a472eb9742f4f486ca9ef13321b7fc2e54f2f60814f339eeda2aff3037573
+
+WORKDIR /app
+
+COPY . .
+
+RUN npm install -g http-server
+
+EXPOSE 8081
+
+CMD ["http-server", "-c-1", "-P", "http://localhost:8081"]

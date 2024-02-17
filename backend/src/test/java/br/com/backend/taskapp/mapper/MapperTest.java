@@ -1,8 +1,8 @@
 package br.com.backend.taskapp.mapper;
 
 import br.com.backend.taskapp.dto.TaskDTO;
-import br.com.backend.taskapp.mapper.mocks.MockTask;
 import br.com.backend.taskapp.model.Task;
+import br.com.backend.taskapp.utils.mocks.MockTask;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -12,7 +12,7 @@ import static br.com.backend.taskapp.mapper.Mapper.parseObjList;
 import static br.com.backend.taskapp.mapper.Mapper.parseObject;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class MapperTest {
+class MapperTest {
     MockTask mockObj;
 
     @BeforeEach
@@ -21,7 +21,7 @@ public class MapperTest {
     }
 
     @Test
-    public void parseEntityToDtoObjTest() {
+    void parseEntityToDtoObjTest() {
         TaskDTO taskDtoAfterParse = parseObject(mockObj.mockTask(), TaskDTO.class);
 
         assertEquals(0, taskDtoAfterParse.getId());
@@ -33,7 +33,7 @@ public class MapperTest {
     }
 
     @Test
-    public void parseDtoObjToEntityTest() {
+    void parseDtoObjToEntityTest() {
         Task taskAfterParse = parseObject(mockObj.mockTaskDTO(), Task.class);
 
         assertEquals(0, taskAfterParse.getId());
@@ -45,7 +45,7 @@ public class MapperTest {
     }
 
     @Test
-    public void parseEntityListToDtoObjList() {
+    void parseEntityListToDtoObjList() {
         List<TaskDTO> listDTOAfterParse = parseObjList(mockObj.mockTaskList(2), TaskDTO.class);
 
         assertEquals(2, listDTOAfterParse.size());
@@ -59,7 +59,7 @@ public class MapperTest {
     }
 
     @Test
-    public void parseDtoObjListToEntityList() {
+    void parseDtoObjListToEntityList() {
         List<Task> listEntityAfterParse = parseObjList(mockObj.mockTaskDTOList(2), Task.class);
 
         assertEquals(2, listEntityAfterParse.size());

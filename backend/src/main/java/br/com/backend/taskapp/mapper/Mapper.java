@@ -3,10 +3,11 @@ package br.com.backend.taskapp.mapper;
 import br.com.backend.taskapp.dto.TaskDTO;
 import br.com.backend.taskapp.model.Task;
 import org.modelmapper.ModelMapper;
+import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.List;
-
+@Component
 public class Mapper {
 
     private static ModelMapper mapper = new ModelMapper();
